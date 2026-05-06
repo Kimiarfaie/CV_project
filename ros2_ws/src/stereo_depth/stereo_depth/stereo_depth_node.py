@@ -23,7 +23,7 @@ class StereoDepthNode(Node):
     def __init__(self):
         super().__init__("stereo_depth_node")
 
-        # Topic names. Remapped in saver.launch.py.
+        # Internal topic names. Remapped in saver.launch.py.
         self.left_image_topic = "left/image"
         self.right_image_topic = "right/image"
         self.left_info_topic = "left/camera_info"
@@ -31,7 +31,7 @@ class StereoDepthNode(Node):
         self.depth_topic = "depth/image"
         self.depth_info_topic = "depth/camera_info"
 
-        # Algorithm
+        # Algorithm / tuning parameters.
         self.declare_parameter("algorithm", "sgbm")
         self.declare_parameter("scale", 0.5)
 
