@@ -85,6 +85,23 @@ cd usb_dds_setup && bash install_ipfrag.sh
 
 You can refer to further documentation [here](https://autowarefoundation.github.io/autoware-documentation/main/installation/additional-settings-for-developers/network-configuration/dds-settings/) or [here](https://docs.ros.org/en/jazzy/How-To-Guides/DDS-tuning.html).
 
+## Submitted solution
+
+This fork implements the missing metric depth-estimation step using a new ROS 2 Python package, `stereo_depth`.
+
+The submitted solution uses a classical stereo pipeline based on OpenCV StereoSGBM. The node subscribes to the rectified grayscale ZED stereo pair, computes a dense disparity map, post-processes the disparity using left-right WLS filtering, converts disparity to metric depth using the camera focal length and stereo baseline, and publishes the resulting depth image into the existing TSDF reconstruction pipeline.
+
+The final submitted output was generated using the SGBM + WLS backend because it produced the best volumetric SDF metrics in the experiments that were conducted.
+
+### Method summary
+
+StereoSGBM estimates disparity by matching local image regions along corresponding scanlines in a rectified stereo pair. Since the provided ZED stereo images are already rectified, corresponding points lie on the same image rows, so the main task is estimating the horizontal pixel shift between the left and right images.
+
+The filtered disparity map is converted to metric depth using:
+
+```text
+depth = fx * baseline / disparity
+
 ## Demo
 The ROS 2 bag file already includes a metric depth topic from the camera. You will recreate or implement your own version. But this is a good start and demo.
 
