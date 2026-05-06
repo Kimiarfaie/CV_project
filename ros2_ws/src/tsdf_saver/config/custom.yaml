@@ -14,7 +14,7 @@ db_tsdf_node:
     in_tf_topic: '/gt_icp/transform'     # Topic name for Legacy Mode subscription
 
     # --- Point Cloud Filtering Parameters ---
-    pc_downsampling: 10                   # Downsampling factor for the input cloud
+    pc_downsampling: 5                   # Downsampling factor for the input cloud
     min_range: 0.1                      # Minimum sensor range (meters)
     max_range: 10.0                      # Maximum sensor range (meters)
 
