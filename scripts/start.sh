@@ -90,8 +90,10 @@ done
 # Enable GUI (X11)
 # ------------------------------------------------------------------------------
 echo "Enabling X11 permissions..."
-xhost +local:docker >/dev/null 2>&1
-xhost +SI:localuser:"${USERNAME}" >/dev/null 2>&1
+if command -v xhost >/dev/null 2>&1; then
+  xhost +local:docker >/dev/null 2>&1 || true
+  xhost +SI:localuser:"${USERNAME}" >/dev/null 2>&1 || true
+fi
 
 # ------------------------------------------------------------------------------
 # Launch the primary container (GAUSS)
@@ -104,7 +106,7 @@ docker run -it --rm \
   --pid=host \
   --ipc=host \
   --name "${RUN_CONTAINER}" \
-  -e DISPLAY="${DISPLAY}" \
+  -e DISPLAY="${DISPLAY:-}" \
   --cap-add=SYS_PTRACE \
   --security-opt seccomp=unconfined \
   -v /tmp/.X11-unix:/tmp/.X11-unix \
