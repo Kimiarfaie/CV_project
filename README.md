@@ -113,6 +113,7 @@ I also applied light gamma preprocessing (gamma = 0.75) to the grayscale stereo 
 I tuned the main stereo parameters using the final volumetric SDF metric, including disparity range, block size, WLS lambda/sigma, uniqueness ratio, speckle filtering, and SGBM mode. I also tested an optional neural stereo backend locally, but the final submitted result uses SGBM-WLS because it was faster, deterministic, and gave better metrics on this setup.
 
 Finally, I reduced the TSDF point-cloud downsampling factor from 10 to 5. This preserved more valid depth evidence during fusion and improved the final mean reconstruction error.
+```
 
 ## Demo
 The ROS 2 bag file already includes a metric depth topic from the camera. You will recreate or implement your own version. But this is a good start and demo.
