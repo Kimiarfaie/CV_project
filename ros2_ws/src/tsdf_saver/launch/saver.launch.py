@@ -56,6 +56,7 @@ def generate_launch_description():
     # ==============================================================
     #  Stereo Depth
     # ==============================================================
+
     stereo_depth_node = Node(
         package="stereo_depth",
         executable="stereo_depth_node",
@@ -206,6 +207,7 @@ def generate_launch_description():
         ),
 
         bag_proc,
+        stereo_depth_node,
         container,
         db_tsdf_node,
         delayed_shutdown
