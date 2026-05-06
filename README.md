@@ -99,21 +99,19 @@ StereoSGBM estimates disparity by matching local image regions along correspondi
 
 The filtered disparity map is converted to metric depth using:
 
-```text
-depth = fx * baseline / disparity
+`depth = fx * baseline / disparity`
 
-where fx is read from the left camera CameraInfo, and baseline is computed from the relative transform between the left and right camera optical frames.
+where `fx` is read from the left camera `CameraInfo`, and `baseline` is computed from the relative transform between the left and right camera optical frames.
 
-Post-processing and tuning
+### Post-processing and tuning
 
 Raw SGBM disparity can be noisy in textureless regions, near occlusions, and around depth discontinuities. To improve the disparity before depth conversion, I used OpenCV WLS disparity filtering with a right-view matcher. This computes both left-to-right and right-to-left disparity maps, then applies edge-aware filtering guided by the left image. This helps reduce unstable disparity estimates and better align disparity boundaries with image edges.
 
-I also applied light gamma preprocessing (gamma = 0.75) to the grayscale stereo images before matching. This brightens darker image regions and slightly changes local contrast, which improved matching stability on this dataset. In my experiments, gamma preprocessing reduced the mean absolute reconstruction error and maximum error compared with the same SGBM-WLS pipeline without gamma preprocessing.
+I also applied light gamma preprocessing (`gamma = 0.75`) to the grayscale stereo images before matching. This brightens darker image regions and slightly changes local contrast, which improved matching stability on this dataset. In my experiments, gamma preprocessing reduced the mean absolute reconstruction error and maximum error compared with the same SGBM-WLS pipeline without gamma preprocessing.
 
 I tuned the main stereo parameters using the final volumetric SDF metric, including disparity range, block size, WLS lambda/sigma, uniqueness ratio, speckle filtering, and SGBM mode. I also tested an optional neural stereo backend locally, but the final submitted result uses SGBM-WLS because it was faster, deterministic, and gave better metrics on this setup.
 
 Finally, I reduced the TSDF point-cloud downsampling factor from 10 to 5. This preserved more valid depth evidence during fusion and improved the final mean reconstruction error.
-```
 
 ## Demo
 The ROS 2 bag file already includes a metric depth topic from the camera. You will recreate or implement your own version. But this is a good start and demo.
