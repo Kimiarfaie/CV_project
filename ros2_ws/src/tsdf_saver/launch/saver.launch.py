@@ -56,9 +56,24 @@ def generate_launch_description():
     # ==============================================================
     #  Stereo Depth
     # ==============================================================
-    """
-    YOUR ROS NODE OR COMPOSABLE NODE GOES HERE
-    """
+    stereo_depth_node = Node(
+        package="stereo_depth",
+        executable="stereo_depth_node",
+        name="stereo_depth_node",
+        output="screen",
+        parameters=[
+            {"use_sim_time": True},
+            {"algorithm": "sgbm"},
+        ],
+        remappings=[
+            ("left/image", "/zed/zedxm/left/gray/rect/image"),
+            ("right/image", "/zed/zedxm/right/gray/rect/image"),
+            ("left/camera_info", "/zed/zedxm/left/gray/rect/image/camera_info"),
+            ("right/camera_info", "/zed/zedxm/right/gray/rect/image/camera_info"),
+            ("depth/image", "/stereo_depth/depth"),
+            ("depth/camera_info", "/stereo_depth/camera_info"),
+        ],
+    )
 
     # ==============================================================
     #  PointCloud Node (XYZ)
@@ -73,8 +88,8 @@ def generate_launch_description():
             {"queue_size": 20}
         ],
         remappings=[
-            ("/zed/zedxm/depth/camera_info", "/zed/zedxm/depth/depth_registered/camera_info"),
-            ("image_rect", "/zed/zedxm/depth/depth_registered"),
+            ("/zed/zedxm/depth/camera_info", "/stereo_depth/camera_info"),
+            ("image_rect", "/stereo_depth/depth"),
             ("points", "/stereo/points")
         ],
         extra_arguments=[{'use_intra_process_comms': True}]
