@@ -10,12 +10,17 @@ class SGBMDepthEstimator:
         block_size: int = 3,
         min_depth_m: float = 0.05,
         max_depth_m: float = 20.0,
+        use_gamma_preprocess: bool = True,
+        gamma: float = 0.75,
     ):
         self.min_disparity = min_disparity
         self.num_disparities = num_disparities
         self.block_size = block_size
         self.min_depth_m = min_depth_m
         self.max_depth_m = max_depth_m
+
+        self.use_gamma_preprocess = use_gamma_preprocess
+        self.gamma = gamma
 
         self.wls_lambda = 8000.0
         self.wls_sigma_color = 2.0
@@ -41,7 +46,21 @@ class SGBMDepthEstimator:
         )
         self.wls_filter.setLambda(self.wls_lambda)
         self.wls_filter.setSigmaColor(self.wls_sigma_color)
-        #self.wls_filter.setLRCthresh(40)
+
+    def preprocess(self, left: np.ndarray, right: np.ndarray):
+        if not self.use_gamma_preprocess:
+            return left, right
+
+        left_f = left.astype(np.float32) / 255.0
+        right_f = right.astype(np.float32) / 255.0
+
+        left_gamma = np.power(left_f, self.gamma)
+        right_gamma = np.power(right_f, self.gamma)
+
+        left = np.clip(left_gamma * 255.0, 0, 255).astype(np.uint8)
+        right = np.clip(right_gamma * 255.0, 0, 255).astype(np.uint8)
+
+        return left, right
 
     def compute_disparity(self, left: np.ndarray, right: np.ndarray) -> np.ndarray:
         disparity_left = self.matcher.compute(left, right)
@@ -62,6 +81,7 @@ class SGBMDepthEstimator:
         fx: float,
         baseline: float,
     ) -> np.ndarray:
+        left, right = self.preprocess(left, right)
         disparity = self.compute_disparity(left, right)
 
         depth = np.full(disparity.shape, np.nan, dtype=np.float32)
